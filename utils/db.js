@@ -2,9 +2,10 @@ import mysql from 'mysql'
 
 const con = mysql.createConnection({
     host: "localhost",
+    port: 3307,
     user: "mateus",
     password: "abacaxi12",
-    database: "acervo_receitas_case"
+    database: "acervo_receita_case"
 })
 
 con.connect(function(err){
@@ -14,3 +15,5 @@ con.connect(function(err){
         console.log("connected")
     }
 })
+
+export default con;

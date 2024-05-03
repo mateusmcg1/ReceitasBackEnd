@@ -3,7 +3,11 @@ import cors from 'cors'
 import { adminRouter } from "./Routes/AdminRoute.js";
 
 const app = express()
-app.use(cors())
+app.use(cors({
+    origin: ["http://localhost:3001"],
+    methods: ['GET', 'POST','PUT'],
+    credentials: true
+}))
 app.use(express.json())
 app.use('/auth', adminRouter)
 
