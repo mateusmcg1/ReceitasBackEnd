@@ -23,4 +23,12 @@ router.post("/adminlogin", (req, res) => {
   });
 });
 
+router.post('/add_cargo', (req,res)=>{
+    const sql = "INSERT INTO cargo (`descricao`) VALUES (?)"
+    con.query(sql,[req.body.descricao],(err,result)=>{
+        if(err) return res.json({Status:false, Error:"Query Error"})
+        return res.json({Status:true})
+    })
+})
+
 export { router as adminRouter };
