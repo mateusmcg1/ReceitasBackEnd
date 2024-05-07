@@ -1,6 +1,7 @@
 import express from "express";
 import con from "../utils/db.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt"
 
 const router = express.Router();
 
@@ -30,5 +31,36 @@ router.post('/add_cargo', (req,res)=>{
         return res.json({Status:true})
     })
 })
+
+router.get('/cargo', (req,res)=>{
+  const sql = "SELECT * FROM cargo"
+  con.query(sql,(err,result)=>{
+      if(err) return res.json({Status:false, Error:"Query Error"})
+      return res.json({Status:true, Result: result})
+  })
+})
+
+router.post('/add_funcionario', (req,res)=>{
+    const sql = `INSERT INTO funcionario 
+    (Nome,Rg, Data_admissao, Salario, idCargo, email, password) 
+    VALUES (?)"`;
+    bcrypt.hash(req.body.password,10,(err,hash)=> {
+      if(err) return res.json({Status:false, Error:"Query Error"})
+        const values = [
+          req.body.Nome,
+          req.body.Rg,
+          req.body.Data_admissao,
+          req.body.Salario,
+          req.body.idCargo,
+          req.body.email,
+          hash
+      ]
+      con.query(sql,[values], (err,result)=>{
+        if(err) return res.json({Status:false, Error:"Query Error"})
+          return res.json({Status:true})
+      })
+    })
+})
+
 
 export { router as adminRouter };
