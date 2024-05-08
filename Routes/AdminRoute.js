@@ -43,9 +43,9 @@ router.get('/cargo', (req,res)=>{
 router.post('/add_funcionario', (req,res)=>{
     const sql = `INSERT INTO funcionario 
     (Nome,Rg, Data_admissao, Salario, idCargo, email, password) 
-    VALUES (?)"`;
+    VALUES (?)`;
     bcrypt.hash(req.body.password,10,(err,hash)=> {
-      if(err) return res.json({Status:false, Error:"Query Error"})
+      if(err) return res.json({Status:false, Error:"Query Error hash"})
         const values = [
           req.body.Nome,
           req.body.Rg,
@@ -56,10 +56,27 @@ router.post('/add_funcionario', (req,res)=>{
           hash
       ]
       con.query(sql,[values], (err,result)=>{
-        if(err) return res.json({Status:false, Error:"Query Error"})
+        if(err) return res.json({Status:false, Error:"Query Error con"})
           return res.json({Status:true})
       })
     })
+})
+
+router.get('/funcionario', (req,res)=>{
+  const sql = "SELECT f.*, c.descricao AS Cargo FROM funcionario f JOIN Cargo c ON f.idCargo = c.idCargo";
+  con.query(sql,(err,result)=>{
+      if(err) return res.json({Status:false, Error:"Query Error"})
+      return res.json({Status:true, Result: result})
+  })
+})
+
+router.get('/funcionario/:id', (req,res)=>{
+  const id = req.params.id
+  const sql = "SELECT * FROM funcionario WHERE idFuncionario=?";
+  con.query(sql,(err,result)=>{
+      if(err) return res.json({Status:false, Error:"Query Error"})
+      return res.json({Status:true, Result: result})
+  })
 })
 
 
