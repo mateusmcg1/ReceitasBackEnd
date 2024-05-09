@@ -70,14 +70,40 @@ router.get('/funcionario', (req,res)=>{
   })
 })
 
-router.get('/funcionario/:id', (req,res)=>{
+router.get('/edit_funcionario/:id', (req,res)=>{
   const id = req.params.id
   const sql = "SELECT * FROM funcionario WHERE idFuncionario=?";
-  con.query(sql,(err,result)=>{
+  con.query(sql, id ,(err,result)=>{
       if(err) return res.json({Status:false, Error:"Query Error"})
       return res.json({Status:true, Result: result})
   })
 })
 
+router.put('/edit_funcionario/:id', (req,res)=>{
+  const id = req.params.id;
+  const sql = `UPDATE funcionario SET Nome=?, Rg=?, Data_admissao=?, Salario=?, idCargo=?, email=? WHERE idFuncionario=?`;
+  const values = [
+    req.body.Nome,
+    req.body.Rg,
+    req.body.Data_admissao,
+    req.body.Salario,
+    req.body.idCargo,
+    req.body.email,
+    id
+  ];
+  con.query(sql, values, (err,result)=>{
+    if(err) return res.json({Status:false, Error:"Query Error"+err});
+    return res.json({Status:true, Result: result});
+  });
+});
+
+router.delete('/delete_funcionario/:id', (req,res)=>{
+  const id = req.params.id
+  const sql = "DELETE from funcionario WHERE idFuncionario= ?";
+  con.query(sql, id ,(err,result)=>{
+      if(err) return res.json({Status:false, Error:"Query Error: "+err})
+      return res.json({Status:true, Result: result})
+  })
+})
 
 export { router as adminRouter };
