@@ -137,4 +137,62 @@ router.delete("/delete_funcionario/:id", (req, res) => {
   });
 });
 
+router.post("/add_restaurante", (req, res) => {
+  const sql = "INSERT INTO restaurante (`Nome`) VALUES (?)";
+  con.query(sql, [req.body.Nome], (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error" });
+    return res.json({ Status: true });
+  });
+});
+
+router.get("/restaurante", (req, res) => {
+  const sql = "SELECT * FROM restaurante";
+  con.query(sql, (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error" });
+    return res.json({ Status: true, Result: result });
+  });
+});
+
+router.get("/edit_restaurante/:id", (req, res) => {
+  const id = req.params.id;
+  const sql = "SELECT * FROM restaurante WHERE idRestaurante=?";
+  con.query(sql, id, (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error" });
+    return res.json({ Status: true, Result: result });
+  });
+});
+
+router.delete("/delete_restaurante/:id", (req, res) => {
+  const id = req.params.id;
+  const sql = "DELETE from restaurante WHERE idRestaurante= ?";
+  con.query(sql, id, (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error: " + err });
+    return res.json({ Status: true, Result: result });
+  });
+});
+
+router.put("/edit_restaurante/:id", (req, res) => {
+  const id = req.params.id;
+  const sql = `UPDATE restaurante SET Nome=? WHERE idRestaurante=?`;
+  const values = [
+    req.body.Nome,
+    id,
+  ];
+  con.query(sql, values, (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error" + err });
+    return res.json({ Status: true, Result: result });
+  }); 
+});
+
+router.post("/add_referencia", (req, res) => {
+  const sql = `INSERT INTO referencia 
+  (Data_Inicio, Data_Fim, idFuncionario, idRestaurante) 
+  VALUES (?)`;
+  con.query(sql, [req.body.Nome], (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error" });
+    return res.json({ Status: true });
+  });
+});
+
+
 export { router as adminRouter };
