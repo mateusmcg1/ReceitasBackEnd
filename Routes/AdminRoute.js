@@ -188,8 +188,14 @@ router.post("/add_referencia", (req, res) => {
   const sql = `INSERT INTO referencia 
   (Data_Inicio, Data_Fim, idFuncionario, idRestaurante) 
   VALUES (?)`;
-  con.query(sql, [req.body.Nome], (err, result) => {
-    if (err) return res.json({ Status: false, Error: "Query Error" });
+  const values = [
+    req.body.Data_Inicio,
+    req.body.Data_Fim,
+    req.body.idFuncionario,
+    req.body.idRestaurante
+  ];
+  con.query(sql, values, (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error" +err });
     return res.json({ Status: true });
   });
 });
