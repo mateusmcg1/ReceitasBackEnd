@@ -6,18 +6,26 @@ import bcrypt from "bcrypt";
 const router = express.Router();
 
 router.post("/adminlogin", (req, res) => {
-  const sql = "SELECT * from funcionario Where email = ? and password = ?";
+  const sql = `
+    SELECT f.email, f.Nome, c.descricao 
+    FROM Funcionario f 
+    JOIN Cargo c ON f.idCargo = c.idCargo 
+    WHERE f.email = ? AND f.password = ?`;
+
   con.query(sql, [req.body.email, req.body.password], (err, result) => {
     if (err) return res.json({ loginStatus: false, Error: "Query error" });
     if (result.length > 0) {
-      const email = result[0].email;
+      const { email, Nome, descricao } = result[0];
       const token = jwt.sign(
-        { role: "admin", email: email },
+        { role: "admin", email: email, name: Nome, cargo: descricao },
         "jwt_secret_key",
         { expiresIn: "1d" }
       );
       res.cookie("token", token);
-      return res.json({ loginStatus: true });
+      return res.json({
+        loginStatus: true,
+        idToken: { jwtToken: token, refreshToken: "dummy_refresh_token" },
+      });
     } else {
       return res.json({ loginStatus: false, Error: "wrong email or password" });
     }
@@ -60,10 +68,7 @@ router.delete("/delete_cargo/:id", (req, res) => {
 router.put("/edit_cargo/:id", (req, res) => {
   const id = req.params.id;
   const sql = `UPDATE cargo SET descricao=? WHERE idCargo=?`;
-  const values = [
-    req.body.descricao,
-    id,
-  ];
+  const values = [req.body.descricao, id];
   con.query(sql, values, (err, result) => {
     if (err) return res.json({ Status: false, Error: "Query Error" + err });
     return res.json({ Status: true, Result: result });
@@ -174,31 +179,79 @@ router.delete("/delete_restaurante/:id", (req, res) => {
 router.put("/edit_restaurante/:id", (req, res) => {
   const id = req.params.id;
   const sql = `UPDATE restaurante SET Nome=? WHERE idRestaurante=?`;
-  const values = [
-    req.body.Nome,
-    id,
-  ];
+  const values = [req.body.Nome, id];
   con.query(sql, values, (err, result) => {
     if (err) return res.json({ Status: false, Error: "Query Error" + err });
     return res.json({ Status: true, Result: result });
-  }); 
+  });
+});
+
+router.get("/referencia", (req, res) => {
+  const sql = `
+    SELECT r.*, f.Nome AS NomeFuncionario, re.Nome AS NomeRestaurante 
+    FROM referencia r 
+    JOIN funcionario f ON r.idFuncionario = f.idFuncionario 
+    JOIN restaurante re ON r.idRestaurante = re.idRestaurante`;
+
+  con.query(sql, (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error: " + err });
+    return res.json({ Status: true, Result: result });
+  });
 });
 
 router.post("/add_referencia", (req, res) => {
   const sql = `INSERT INTO referencia 
   (Data_Inicio, Data_Fim, idFuncionario, idRestaurante) 
-  VALUES (?)`;
+  VALUES (?, ?,?,?)`;
   const values = [
     req.body.Data_Inicio,
     req.body.Data_Fim,
     req.body.idFuncionario,
-    req.body.idRestaurante
+    req.body.idRestaurante,
   ];
   con.query(sql, values, (err, result) => {
-    if (err) return res.json({ Status: false, Error: "Query Error" +err });
+    if (err) return res.json({ Status: false, Error: "Query Error" + err });
     return res.json({ Status: true });
   });
 });
 
+router.delete("/delete_referencia/:idFuncionario/:idRestaurante", (req, res) => {
+  const idFuncionario = req.params.idFuncionario;
+  const idRestaurante = req.params.idRestaurante;
+  const sql = "DELETE from referencia WHERE idFuncionario=? AND idRestaurante=?";
+  const values = [idFuncionario, idRestaurante];
+  con.query(sql, values, (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error: " + err });
+    return res.json({ Status: true, Result: result });
+  });
+});
+
+router.get("/referencia/:idFuncionario/:idRestaurante", (req, res) => {
+  const idFuncionario = req.params.idFuncionario;
+  const idRestaurante = req.params.idRestaurante;
+  const sql = "SELECT * FROM referencia WHERE idFuncionario=? AND idRestaurante=?";
+  con.query(sql, [idFuncionario, idRestaurante], (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error" });
+    return res.json({ Status: true, Result: result });
+  });
+});
+
+router.put("/edit_referencia/:idFuncionario/:idRestaurante", (req, res) => {
+  const idFuncionario = req.params.idFuncionario;
+  const idRestaurante = req.params.idRestaurante;
+  const sql = `UPDATE referencia SET Data_Inicio=?, Data_Fim=?, idFuncionario=?, idRestaurante=?  WHERE idFuncionario=? AND idRestaurante=?`;
+  const values = [
+    req.body.Data_Inicio,
+    req.body.Data_Fim,
+    req.body.idFuncionario,
+    req.body.idRestaurante,
+    idFuncionario,
+    idRestaurante,
+  ];
+  con.query(sql, values, (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error" + err });
+    return res.json({ Status: true, Result: result });
+  });
+});
 
 export { router as adminRouter };

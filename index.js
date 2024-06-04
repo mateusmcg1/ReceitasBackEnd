@@ -1,6 +1,10 @@
 import express from "express";
 import cors from 'cors'
 import { adminRouter } from "./Routes/AdminRoute.js";
+import { chefRouter } from "./Routes/ChefRoute.js";
+import { tasterRouter } from "./Routes/tasterRoute.js";
+import { editorRouter } from "./Routes/EditorRoute.js";
+
 
 const app = express()
 app.use(cors({
@@ -10,6 +14,9 @@ app.use(cors({
 }))
 app.use(express.json())
 app.use('/auth', adminRouter)
+app.use('/chef', chefRouter)
+app.use('/taster', tasterRouter)
+app.use('/editor', editorRouter)
 
 app.listen(3000, ()=>{
     console.log("Server is running")
