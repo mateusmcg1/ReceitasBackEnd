@@ -77,5 +77,38 @@ router.put("/edit_categoria/:id", (req, res) => {
   });
 });
 
+router.post("/add_receita", (req, res) => {
+  const sql = `INSERT INTO receita 
+    (nome,Data,ModoPreparo, QuantidadePorcao, IndRecInedita, idCozinheiro, Categoria) 
+    VALUES (?)`;
+    const values = [
+      req.body.nome,
+      req.body.Data,
+      req.body.ModoPreparo,
+      req.body.QuantidadePorcao,
+      req.body.IndRecInedita,
+      req.body.idCozinheiro,
+      req.body.idCategoria,
+    ];
+    con.query(sql, [values], (err, result) => {
+      if (err) return res.json({ Status: false, Error: "Query Error con" +err });
+      return res.json({ Status: true });
+    });
+});
+
+router.get("/receita", (req, res) => {
+  const sql = `
+    SELECT r.*, f.Nome AS NomeFuncionario, c.Nome AS NomeCategoria 
+    FROM receita r 
+    JOIN funcionario f ON r.idCozinheiro = f.idFuncionario 
+    JOIN categoria c ON r.Categoria = c.idCategoria`;
+
+  con.query(sql, (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error: " + err });
+    return res.json({ Status: true, Result: result });
+  });
+});
+
+
 
 export { router as chefRouter };
