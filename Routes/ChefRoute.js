@@ -195,6 +195,38 @@ router.delete("/delete_composicao/:idIngredientes/:Receita_nome/:idCozinheiro", 
   });
 });
 
+router.get("/composicao/:idIngredientes/:Receita_nome/:idCozinheiro", (req, res) => {
+  const Receita_nome = req.params.Receita_nome;
+  const idCozinheiro = req.params.idCozinheiro;
+  const idIngredientes = req.params.idIngredientes;
+  const sql = "SELECT * FROM composicao WHERE idIngredientes=? AND Receita_nome=? AND idCozinheiro=?";
+  con.query(sql, [Receita_nome, idCozinheiro, idIngredientes], (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error" + err });
+    return res.json({ Status: true, Result: result });
+  });
+});
+
+router.put("/edit_composicao/:idIngredientes/:Receita_nome/:idCozinheiro", (req, res) => {
+  const Receita_nome = req.params.Receita_nome;
+  const idCozinheiro = req.params.idCozinheiro;
+  const idIngredientes = req.params.idIngredientes;
+  const sql = `UPDATE composicao SET QuantidadeIngrediente=?,idMedida=?,idIngredientes=?,Receita_nome=?, idCozinheiro=?  WHERE idIngredientes=? AND Receita_nome=? AND idCozinheiro=?`;
+  const values = [
+    req.body.QuantidadeIngrediente,
+    req.body.idMedida,
+    req.body.idIngredientes,
+    req.body.Receita_nome,
+    req.body.idCozinheiro,
+    Receita_nome,
+    idCozinheiro,
+    idIngredientes
+  ];
+  con.query(sql, values, (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error" + err });
+    return res.json({ Status: true, Result: result });
+  });
+});
+
 
 //get pra medida e ingredientes
 router.get("/medida", (req, res) => {
