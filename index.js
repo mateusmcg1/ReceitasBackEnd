@@ -17,6 +17,7 @@ app.use('/auth', adminRouter)
 app.use('/chef', chefRouter)
 app.use('/taster', tasterRouter)
 app.use('/editor', editorRouter)
+app.use(express.static('Public'))
 
 app.listen(3000, ()=>{
     console.log("Server is running")
