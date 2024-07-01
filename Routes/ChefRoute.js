@@ -195,6 +195,37 @@ router.delete("/delete_composicao/:idIngredientes/:Receita_nome/:idCozinheiro", 
   });
 });
 
+router.get("/composicao/:idIngredientes/:Receita_nome/:idCozinheiro", (req, res) => {
+  const { idIngredientes, Receita_nome, idCozinheiro } = req.params;
+  const sql = "SELECT * FROM composicao WHERE idIngredientes = ? AND Receita_nome = ? AND idCozinheiro = ?";
+  con.query(sql, [idIngredientes, Receita_nome, idCozinheiro], (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error: " + err });
+    return res.json({ Status: true, Result: result });
+  });
+});
+
+
+router.put("/edit_composicao/:idIngredientes/:Receita_nome/:idCozinheiro", (req, res) => {
+  const Receita_nome = req.params.Receita_nome;
+  const idCozinheiro = req.params.idCozinheiro;
+  const idIngredientes = req.params.idIngredientes;
+  const sql = `UPDATE composicao SET QuantidadeIngrediente=?,idMedida=?,idIngredientes=?,Receita_nome=?, idCozinheiro=?  WHERE idIngredientes=? AND Receita_nome=? AND idCozinheiro=?`;
+  const values = [
+    req.body.QuantidadeIngrediente,
+    req.body.idMedida,
+    req.body.idIngredientes,
+    req.body.Receita_nome,
+    req.body.idCozinheiro,
+    idIngredientes,
+    Receita_nome,
+    idCozinheiro
+  ];
+  con.query(sql, values, (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error" + err });
+    return res.json({ Status: true, Result: result });
+  });
+});
+
 
 //get pra medida e ingredientes
 router.get("/medida", (req, res) => {
@@ -205,6 +236,43 @@ router.get("/medida", (req, res) => {
   });
 });
 
+router.get("/medida/:id", (req, res) => {
+  const id = req.params.id;
+  const sql = "SELECT * FROM medida WHERE idMedida=?";
+  con.query(sql, id, (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error" });
+    return res.json({ Status: true, Result: result });
+  });
+});
+
+router.put("/edit_medida/:id", (req, res) => {
+  const id = req.params.id;
+  const sql = `UPDATE medida SET Descricao=? WHERE idMedida=?`;
+  const values = [req.body.descricao, id];
+  con.query(sql, values, (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error" + err });
+    return res.json({ Status: true, Result: result });
+  });
+});
+
+router.delete("/delete_medida/:id", (req, res) => {
+  const id = req.params.id;
+  const sql = "DELETE from medida WHERE idMedida= ?";
+  con.query(sql, id, (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error: " + err });
+    return res.json({ Status: true, Result: result });
+  });
+});
+
+router.post("/add_medida", (req, res) => {
+  const sql = `INSERT INTO medida (Descricao) VALUES (?)`;
+  con.query(sql, [req.body.descricao], (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error" + err });
+    return res.json({ Status: true });
+  });
+});
+
+//get para ingredientes
 router.get("/ingredientes", (req, res) => {
   const sql = "SELECT * FROM ingredientes";
   con.query(sql, (err, result) => {
@@ -213,8 +281,42 @@ router.get("/ingredientes", (req, res) => {
   });
 });
 
+router.get("/ingredientes/:id", (req, res) => {
+  const id = req.params.id;
+  const sql = "SELECT * FROM ingredientes WHERE idIngredientes=?";
+  con.query(sql, id, (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error" });
+    return res.json({ Status: true, Result: result });
+  });
+});
 
+router.put("/edit_ingrediente/:id", (req, res) => {
+  const id = req.params.id;
+  const sql = `UPDATE ingredientes SET Nome=?, descricao=? WHERE idIngredientes=?`;
+  const values = [req.body.Nome, req.body.descricao, id];
+  con.query(sql, values, (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error: " + err });
+    return res.json({ Status: true, Result: result });
+  });
+});
 
+router.delete("/delete_ingredientes/:id", (req, res) => {
+  const id = req.params.id;
+  const sql = "DELETE from ingredientes WHERE idIngredientes= ?";
+  con.query(sql, id, (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error: " + err });
+    return res.json({ Status: true, Result: result });
+  });
+});
+
+router.post("/add_ingrediente", (req, res) => {
+  const sql = `INSERT INTO ingredientes (Nome, descricao) VALUES (?, ?)`;
+  const values = [req.body.Nome, req.body.descricao];
+  con.query(sql, values, (err, result) => {
+    if (err) return res.json({ Status: false, Error: "Query Error: " + err });
+    return res.json({ Status: true });
+  });
+});
 
 
 export { router as chefRouter };
