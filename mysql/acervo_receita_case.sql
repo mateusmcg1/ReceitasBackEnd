@@ -147,7 +147,7 @@ CREATE TABLE `funcionario` (
   `Nome` varchar(100) NOT NULL COMMENT 'Contem o nome do funcionario contratado pela empresa.\n\nexemplo:\nidfuncionario   Nome\n\n   000001         Paulo\n   000002         Ana',
   `Rg` char(15) NOT NULL COMMENT 'Contem o registro único de identificação do funcionario.\n\nexemplo:\n083.531. 04 18 ssp-df\n11.131.155 ssp-df ',
   `Data_admissao` date NOT NULL COMMENT 'Contém a data de contratação do funcionário pela empresa.\n\nexemplo:\n\n02/04/2002\n26/01/2021',
-  `Salario` decimal(4,1) NOT NULL COMMENT 'Contem o valor em R$ 999.999.999,99, em pagamento mensal pelos serviços prestados, pelos funcionários à empresa.\n\nexemplo:\n\nR$ 12.000,00\nR$  8.450,00',
+  `Salario` decimal(12,2) NOT NULL COMMENT 'Contem o valor em R$ 999.999.999,99, em pagamento mensal pelos serviços prestados, pelos funcionários à empresa.\n\nexemplo:\n\nR$ 12.000,00\nR$  8.450,00',
   `idCargo` int NOT NULL COMMENT 'Contém o número do identicador único, do cargo.',
   `email` varchar(45) NOT NULL,
   `password` varchar(255) NOT NULL,
